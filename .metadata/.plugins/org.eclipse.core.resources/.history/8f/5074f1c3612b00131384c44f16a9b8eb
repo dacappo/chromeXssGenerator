@@ -1,0 +1,7 @@
+package analytics.dacappo.sap.com;
+
+public abstract class Aspect {
+	
+	public boolean checkAspect(ConcreteAspect c) {return false;};
+	
+}

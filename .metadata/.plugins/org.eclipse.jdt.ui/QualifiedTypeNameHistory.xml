@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="dd.DBCredentials"/>
+<fullyQualifiedTypeName name="persistence.MySQLPersistencyLayer"/>
+<fullyQualifiedTypeName name="javax.print.attribute.standard.PresentationDirection"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="analytics.dacappo.sap.com.ConcreteAspect"/>
+<fullyQualifiedTypeName name="analytics.dacappo.sap.com.Flow"/>
+<fullyQualifiedTypeName name="analytics.dacappo.sap.com.MarkupContext"/>
+<fullyQualifiedTypeName name="analytics.dacappo.sap.com.BypassCondition"/>
+<fullyQualifiedTypeName name="java.util.LinkedList"/>
+<fullyQualifiedTypeName name="org.htmlparser.lexer.Lexer"/>
+<fullyQualifiedTypeName name="org.htmlparser.Node"/>
+<fullyQualifiedTypeName name="java.util.Vector"/>
+<fullyQualifiedTypeName name="org.htmlparser.lexer.PageAttribute"/>
+<fullyQualifiedTypeName name="org.htmlparser.Text"/>
+<fullyQualifiedTypeName name="org.htmlparser.Tag"/>
+<fullyQualifiedTypeName name="dd.Finding"/>
+</qualifiedTypeNameHistroy>

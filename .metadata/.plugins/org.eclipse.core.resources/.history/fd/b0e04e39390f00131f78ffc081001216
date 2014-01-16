@@ -1,0 +1,99 @@
+package analytics.dacappo.sap.com;
+
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import dd.Finding;
+import dd.Source;
+
+public class Analyzer {
+		
+	private static int numberOfAnalysedFindings = 0;
+	private static int numberOfPossibleBypasses = 0;
+	
+	private static LinkedList<BypassCondition> bypassConditions = new LinkedList<BypassCondition>();
+	
+	/* 
+	 * Add the various found Cross-site scripting bypasses
+	 */
+	
+	RequiredAspect bla = new RequiredAspect();
+		
+	RequiredAspect ra2 = new RequiredAspect();
+	
+	Flow<RequiredAspect> requiredFlow1 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+	Flow<RequiredAspect> requiredFlow2 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+	Flow<RequiredAspect> requiredFlow3 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+	
+	FlowPattern<RequiredAspect> requiredFlowPattern = new FlowPattern<RequiredAspect>(new RequiredAspect());
+	
+	/*
+	//requiredFlowPattern.addFlow(requiredFlow1);
+	//requiredFlowPattern.addFlow(requiredFlow2);
+	//requiredFlowPattern.addFlow(requiredFlow3);
+	
+	
+
+	bypassCondition = new BypassCondition(requiredFlowPattern);
+	findingCondition = new FindingCondition(concreteFlowPattern);
+	*/
+	
+	private static int[] bypassConditionsCount = new int[bypassConditions.size()];
+		
+	public static int getNumOfAnalyses() {
+		return numberOfAnalysedFindings;
+	}
+	
+	public static int getNumberOfPossibleBypasses() {
+		return numberOfPossibleBypasses;
+	}
+	
+	public static int getBypassConditionCount(int index) {
+		return bypassConditionsCount[index];
+	}
+	
+	public static BypassCondition getBypasCondition(int index) {
+		return bypassConditions.get(index);
+	}
+	
+	
+	public static void analyseFinding(Finding f) {
+		
+		Iterator<BypassCondition> bypassConditionIterator = bypassConditions.iterator();		
+		boolean bypassable = false;
+		
+		while(bypassConditionIterator.hasNext()) {
+			BypassCondition bypass = bypassConditionIterator.next();
+			if(bypass.checkCondition(getConditionFromFinding(f))) {
+				bypassConditionsCount[bypassConditions.indexOf(bypass)]++;
+				bypassable = true;
+			}
+		}		
+		if (bypassable)  numberOfPossibleBypasses++;		
+		numberOfAnalysedFindings++;
+	}
+	
+	private static FindingCondition getConditionFromFinding(Finding f) {
+		
+		FlowPattern<ConcreteAspect> flowPattern = new FlowPattern<ConcreteAspect>(new ConcreteAspect(f.getSinkId().toString()));
+		
+		Iterator<Source> sourceIterator = f.getSources().values().iterator();		
+		while(sourceIterator.hasNext()) {
+			Source source = sourceIterator.next();
+			
+			// TODO setting the mark-up context aspects
+			
+			MarkupContext<ConcreteAspect> markupContext = new MarkupContext<ConcreteAspect>();		
+			Flow<ConcreteAspect> flow = new Flow<ConcreteAspect>(new ConcreteAspect(source.getSourceId().toString()), markupContext);
+			flowPattern.addFlow(flow);
+		}				
+		
+		FindingCondition findingCondition = new FindingCondition(flowPattern);
+		
+		return findingCondition;
+	}
+	
+	
+
+}

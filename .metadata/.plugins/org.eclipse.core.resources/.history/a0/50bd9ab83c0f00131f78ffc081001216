@@ -1,0 +1,116 @@
+package analytics.dacappo.sap.com;
+
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import dd.Finding;
+import dd.Source;
+
+public class Analyzer {
+	
+	private static Analyzer analyzer = null;
+	
+	public static Analyzer getAnalyzer() {
+		
+		if(analyzer != null) {
+			return analyzer;
+		} else {
+			analyzer = new Analyzer();
+			return analyzer;
+		}
+	}
+		
+	private int numberOfAnalysedFindings = 0;
+	private int numberOfPossibleBypasses = 0;
+	
+	private LinkedList<BypassCondition> bypassConditions = new LinkedList<BypassCondition>();
+	
+	private Analyzer() {
+		setBypassConditions();
+	}
+		
+	/* 
+	 * Add the various found Cross-site scripting bypasses
+	 */
+	private void setBypassConditions() {
+		RequiredAspect ra1 = new RequiredAspect();
+		ra1.addForbiddenValue("0");
+		
+		RequiredAspect ra2 = new RequiredAspect();
+		ra2.addAllowedValue("0");
+		
+		Flow<RequiredAspect> requiredFlow1 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+		Flow<RequiredAspect> requiredFlow2 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+		Flow<RequiredAspect> requiredFlow3 = new Flow<RequiredAspect>(new RequiredAspect(), new MarkupContext<RequiredAspect>());
+		
+		RequiredAspect sink = new RequiredAspect();
+		sink.addAllowedValue("5");
+		FlowPattern<RequiredAspect> requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		requiredFlowPattern.addFlow(requiredFlow3);
+		
+		BypassCondition bypassCondition = new BypassCondition(requiredFlowPattern);
+	}
+	
+	
+	private int[] bypassConditionsCount = new int[bypassConditions.size()];
+		
+	public int getNumOfAnalyses() {
+		return numberOfAnalysedFindings;
+	}
+	
+	public int getNumberOfPossibleBypasses() {
+		return numberOfPossibleBypasses;
+	}
+	
+	public int getBypassConditionCount(int index) {
+		return bypassConditionsCount[index];
+	}
+	
+	public BypassCondition getBypasCondition(int index) {
+		return bypassConditions.get(index);
+	}
+	
+	
+	public void analyseFinding(Finding f) {
+		
+		Iterator<BypassCondition> bypassConditionIterator = bypassConditions.iterator();		
+		boolean bypassable = false;
+		
+		while(bypassConditionIterator.hasNext()) {
+			BypassCondition bypass = bypassConditionIterator.next();
+			if(bypass.checkCondition(getConditionFromFinding(f))) {
+				bypassConditionsCount[bypassConditions.indexOf(bypass)]++;
+				bypassable = true;
+			}
+		}		
+		if (bypassable)  numberOfPossibleBypasses++;		
+		numberOfAnalysedFindings++;
+	}
+	
+	private FindingCondition getConditionFromFinding(Finding f) {
+		
+		FlowPattern<ConcreteAspect> flowPattern = new FlowPattern<ConcreteAspect>(new ConcreteAspect(f.getSinkId().toString()));
+		
+		Iterator<Source> sourceIterator = f.getSources().values().iterator();		
+		while(sourceIterator.hasNext()) {
+			Source source = sourceIterator.next();
+			
+			// TODO setting the mark-up context aspects
+			
+			MarkupContext<ConcreteAspect> markupContext = new MarkupContext<ConcreteAspect>();		
+			Flow<ConcreteAspect> flow = new Flow<ConcreteAspect>(new ConcreteAspect(source.getSourceId().toString()), markupContext);
+			flowPattern.addFlow(flow);
+		}				
+		
+		FindingCondition findingCondition = new FindingCondition(flowPattern);
+		
+		return findingCondition;
+	}
+	
+	
+
+}

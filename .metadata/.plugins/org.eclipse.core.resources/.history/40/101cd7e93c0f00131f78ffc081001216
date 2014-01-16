@@ -1,0 +1,46 @@
+package analytics.dacappo.sap.com;
+
+import java.sql.SQLException;
+import java.util.Date;
+
+import dd.DBCredentials;
+import dd.Finding;
+import persistence.MySQLPersistencyLayer;
+
+public class RunAnalyzing {
+	
+	public static void main(String[] args) throws SQLException {
+		/*
+		 * Database connection settings: Server - Port - User - Password - Database
+		 */
+		DBCredentials credentials = new DBCredentials("localhost", 3306, "crawler", "crawler", "crawler");
+		
+		/*
+		 * Establish connection to database
+		 */
+		MySQLPersistencyLayer persistence = new MySQLPersistencyLayer(credentials);
+		
+		/*
+		 * Query database for findings with special sink
+		 */
+		persistence.openFindings(5);
+				
+		/*
+		 * Loop over findings and call analyzer
+		 */
+		long timestamp = System.currentTimeMillis();
+		for (Finding f = persistence.nextFinding(); f != null; f = persistence.nextFinding()){
+			Analyzer.analyseFinding(f);
+		}
+		timestamp = System.currentTimeMillis() - timestamp;
+		
+		/*
+		 * Print results
+		 */
+		
+		System.out.println("Number of analyzed findings: " + Analyzer.getNumOfAnalyses());
+		System.out.println("Number of possible bypasses: " + Analyzer.getNumberOfPossibleBypasses());
+		System.out.println("Time for analyzing: " + (int)timestamp/1000 + " seconds" );
+				
+	}
+}

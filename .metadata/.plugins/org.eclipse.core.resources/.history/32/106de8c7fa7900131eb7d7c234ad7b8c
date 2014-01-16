@@ -1,0 +1,619 @@
+package analytics.dacappo.sap.com;
+
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Vector;
+
+import org.htmlparser.Node;
+import org.htmlparser.Tag;
+import org.htmlparser.Text;
+import org.htmlparser.lexer.Lexer;
+import org.htmlparser.lexer.PageAttribute;
+import org.htmlparser.util.ParserException;
+
+import dd.Finding;
+import dd.Source;
+
+public class Analyzer {
+	
+	// Singleton instance of ANALYZER
+	private static Analyzer analyzer = null;
+	// Count for sum of analyzed FINDINGS
+	private int numberOfAnalyzedFindings = 0;
+	// Count for sum of matched bypasses
+	private int numberOfPossibleBypasses = 0;
+	// List for all bypasses defined as BYPASSCONDITION
+	private LinkedList<BypassCondition> bypassConditions = new LinkedList<BypassCondition>();
+	// Count for sum of every single bypass
+	private int[] bypassConditionsCount;
+	
+	
+	/**
+	* Implementation of Singleton Pattern
+	* @return ANALYZER
+	*/
+	public static Analyzer getAnalyzer() {
+		
+		if(analyzer != null) {
+			return analyzer;
+		} else {
+			analyzer = new Analyzer();
+			return analyzer;
+		}
+	}	
+	
+	
+	/**
+	* Constructs an ANALYZER
+	* @return full name
+	*/
+	private Analyzer() {
+		setBypassConditions();
+		bypassConditionsCount = new int[bypassConditions.size()];
+	}
+	
+	
+	
+	/**
+	* Defines all listed Bypasses and adds it to a list
+	*/
+	private void setBypassConditions() {		
+		
+		/* ------------------------------------------------------------ 1. Bypass ------------------------------------------------------------ */
+		
+		RequiredAspect ra1 = new RequiredAspect();
+		ra1.addForbiddenValue("0");
+		
+		RequiredAspect ra2 = new RequiredAspect();
+		ra2.addAllowedValue("0");
+		
+		RequiredAspect ra3 = new RequiredAspect();
+		ra3.addForbiddenValuePart("'");
+		ra3.addForbiddenValuePart("\"");
+		
+		MarkupContext<RequiredAspect> mk1 = new MarkupContext<RequiredAspect>();
+		mk1.setContent(ra3);
+		
+		Flow<RequiredAspect> requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		Flow<RequiredAspect> requiredFlow2 = new Flow<RequiredAspect>(ra2, mk1);
+		Flow<RequiredAspect> requiredFlow3 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		RequiredAspect sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		FlowPattern<RequiredAspect> requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		requiredFlowPattern.addFlow(requiredFlow3);
+		
+		BypassCondition bypassCondition = new BypassCondition("XSS-AUDITOR: Flow Pattern: controled - benign - controled",requiredFlowPattern);
+		bypassConditions.add(bypassCondition);
+		
+		
+		
+		
+		
+		
+		/* ------------------------------------------------------------ 2. Bypass ------------------------------------------------------------ */
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		ra2 = new RequiredAspect();
+		ra2.addAllowedValue("0");
+		
+		ra3 = new RequiredAspect();
+		ra3.addForbiddenValuePart("'");
+		ra3.addForbiddenValuePart("\"");
+		
+		mk1 = new MarkupContext<RequiredAspect>();
+		mk1.setContent(ra3);
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		requiredFlow2 = new Flow<RequiredAspect>(ra2, mk1);
+		requiredFlow3 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		requiredFlowPattern.addFlow(requiredFlow3);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Flow Pattern: URL - benign - URL",requiredFlowPattern));
+		
+		/* ------------------------------------------------------------ 3. Bypass ------------------------------------------------------------ */
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		ra2 = new RequiredAspect();
+		ra2.addAllowedValue("0");
+		ra2.addAllowedValue("8");
+		ra2.addAllowedValue("9");
+		ra2.addAllowedValue("10");
+		ra2.addAllowedValue("11");
+		ra2.addAllowedValue("12");
+		ra2.addAllowedValue("13");
+		ra2.addAllowedValue("14");
+		
+		ra3 = new RequiredAspect();
+		ra3.addForbiddenValuePart("'");
+		ra3.addForbiddenValuePart("\"");
+		
+		mk1 = new MarkupContext<RequiredAspect>();
+		mk1.setContent(ra3);
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		requiredFlow2 = new Flow<RequiredAspect>(ra2, mk1);
+		requiredFlow3 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		requiredFlowPattern.addFlow(requiredFlow3);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Flow Pattern: URL - NOT URL - URL",requiredFlowPattern));
+		
+				
+		
+		/* ------------------------------------------------------------ 4. Bypass ------------------------------------------------------------ */
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+				
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		requiredFlow2 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Flow Pattern: URL - URL -> Eventhandler splitting",requiredFlowPattern));
+		
+		/* ------------------------------------------------------------ 5. Bypass ------------------------------------------------------------ */
+		
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		
+		ra2 = new RequiredAspect();
+		ra2.addAllowedValue("iframe");
+		
+		ra3 = new RequiredAspect();
+		ra3.addAllowedValue("0");
+		ra3.addAllowedValue("2");
+		
+		mk1 = new MarkupContext<RequiredAspect>();
+		mk1.setCurrentTag(ra2);
+		mk1.setCurrentTagPosition(ra3);
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, mk1);
+		
+		sink = new RequiredAspect();
+		//sink.addAllowedValue("2");
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Iframe srcdoc attribute",requiredFlowPattern));
+		
+		
+		
+		/* ------------------------------------------------------------ 6. Bypass ------------------------------------------------------------ */
+		
+		
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		ra2 = new RequiredAspect();		
+		ra2.addAllowedValue("script"); // script tag
+		
+		ra3 = new RequiredAspect();
+		ra3.addForbiddenValue("src");
+		
+		
+		MarkupContext<RequiredAspect> markupContext1 =  new MarkupContext<RequiredAspect>();
+		markupContext1.setCurrentTag(ra2);
+		markupContext1.setCurrentAttribute(ra3);
+		markupContext1.addPreviousAttribute(ra3);
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1,markupContext1);
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: script tag hijacking",requiredFlowPattern));
+		
+		
+		/* ------------------------------------------------------------ 7. Bypass ------------------------------------------------------------ */
+		
+				
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		ra2 = new RequiredAspect();		
+		ra2.addAllowedValue("script"); // script tag
+		
+		ra3 = new RequiredAspect();
+		ra3.addAllowedValue("src"); //
+		
+		RequiredAspect ra4 = new RequiredAspect();
+		ra4.addAllowedValue("1");		
+		ra4.addAllowedValue("0");
+		
+		RequiredAspect ra5 = new RequiredAspect();
+		ra5.addAllowedValuePart("www");
+		ra5.addAllowedValuePart("http");
+		
+		markupContext1 =  new MarkupContext<RequiredAspect>();
+		markupContext1.setCurrentTag(ra2);
+		markupContext1.setCurrentAttribute(ra3);
+		markupContext1.setCurrentAttributePosition(ra4);
+		markupContext1.setContent(ra5);
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1,markupContext1);
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: script src attribute hijacking",requiredFlowPattern));
+		
+		
+		
+		/* ------------------------------------------------------------ 8. Bypass ------------------------------------------------------------ */
+		
+		
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		ra2 = new RequiredAspect();		
+		ra2.addAllowedValue("img"); // script tag
+		
+		
+		
+		markupContext1 =  new MarkupContext<RequiredAspect>();
+		markupContext1.setCurrentTag(ra2);
+		
+		
+		requiredFlow1 = new Flow<RequiredAspect>(ra1,markupContext1);
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: image hijacking",requiredFlowPattern));
+		
+		
+		
+		
+		/* ------------------------------------------------------------ Count ------------------------------------------------------------ */
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		
+		bypassCondition = new BypassCondition("Count document.write() sinks ",requiredFlowPattern);
+		bypassConditions.add(bypassCondition);
+		
+		/* ------------------------------------------------------------           ------------------------------------------------------------ */
+		/* ------------------------------------------------------------  Trident  ------------------------------------------------------------ */
+		/* ------------------------------------------------------------           ------------------------------------------------------------ */
+		
+		/* ------------------------------------------------------------ 1. Bypass ------------------------------------------------------------ */
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+				
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		sink = new RequiredAspect(); // Check for every sink, because Trident's Filter blocks all sinks!!!
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("Trident-Filter: Source is document.hash",requiredFlowPattern));
+		
+		/* ------------------------------------------------------------ 2. Bypass ------------------------------------------------------------ */
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+		
+		
+		ra2 = new RequiredAspect();
+		ra2.addAllowedValue("style");
+		
+		ra3 = new RequiredAspect();
+		ra3.addAllowedValue("1"); // value part of style-attribute
+		
+		mk1 = new MarkupContext<RequiredAspect>();
+		mk1.setCurrentAttribute(ra2);
+		mk1.setCurrentAttributePosition(ra3);
+				
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, mk1);
+		
+		sink = new RequiredAspect(); // Check for every sink, because Trident's Filter blocks all sinks!!!
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		
+		bypassConditions.add(new BypassCondition("Trident-Filter: CSS Expressions",requiredFlowPattern));
+		
+	}	
+	
+		
+	public int getNumOfAnalyses() {
+		return numberOfAnalyzedFindings;
+	}
+	
+	public int getNumberOfPossibleBypasses() {
+		return numberOfPossibleBypasses;
+	}
+	
+	public int getBypassConditionCount(int index) {
+		return bypassConditionsCount[index];
+	}
+	
+	public BypassCondition getBypasCondition(int index) {
+		return bypassConditions.get(index);
+	}
+	
+	public LinkedList<BypassCondition> getBypasses() {
+		return bypassConditions;
+	}
+	
+	
+	/**
+	* Analyzes a FINDING for every bypass
+	* @param FINDING
+	*/
+	public void analyseFinding(Finding f) throws ParserException {		
+		
+		Iterator<BypassCondition> bypassConditionIterator = bypassConditions.iterator();		
+		boolean bypassable = false;
+		
+		
+		FindingCondition findingCondition = getConditionFromFinding(f);		
+		
+		while(bypassConditionIterator.hasNext()) {
+			BypassCondition bypass = bypassConditionIterator.next();
+			
+			if(bypass.checkCondition(findingCondition)) {
+				bypassConditionsCount[bypassConditions.indexOf(bypass)]++;
+				bypassable = true;
+			}
+		}		
+		if (bypassable)  numberOfPossibleBypasses++;
+		numberOfAnalyzedFindings++;
+		
+		
+		if (numberOfAnalyzedFindings % 1000 == 0) System.out.println("Analyzed findings : " + numberOfAnalyzedFindings );
+	}
+	
+	
+	/**
+	* Creates the FINDINGCONDITION  out of a FINDING
+	* @param FINDING
+	* @return FINDINGCONDITION
+	*/
+	private FindingCondition getConditionFromFinding(Finding finding) throws ParserException {
+		
+		/*
+		 *  Create flow pattern with SINK ID and list of single flows
+		 */
+		FlowPattern<ConcreteAspect> flowPattern = new FlowPattern<ConcreteAspect>(new ConcreteAspect(finding.getSinkId().toString()));
+		
+		Lexer lexer = new Lexer(finding.getValue());
+				
+		
+		/*
+		 *  iterate over each flow
+		 */
+		Iterator<Source> sourceIterator = finding.getSources().values().iterator();		
+		while(sourceIterator.hasNext()) {
+			
+			Source source = sourceIterator.next();
+			
+			MarkupContext<ConcreteAspect> markupContext = this.getMarkupContextFromFinding(lexer, source);
+			
+			// Add created flow to flowPattern
+			Flow<ConcreteAspect> flow = new Flow<ConcreteAspect>(new ConcreteAspect(source.getSourceId().toString()), markupContext);
+			flowPattern.addFlow(flow);
+		}				
+		
+		
+		/*
+		 *  Create final FindingCondtion with complete flowPattern and return it
+		 */
+		FindingCondition findingCondition = new FindingCondition(flowPattern);
+		
+				
+		return findingCondition;
+	}
+	
+	/**
+	* Creates the MarkupContext out of a Source and the corresponding Lexer
+	* @param Lexer, Source
+	* @return MarkupContext
+	*/
+	private MarkupContext<ConcreteAspect> getMarkupContextFromFinding(Lexer lexer, Source source) throws ParserException {
+		
+		/*
+		 *  Create markupContext for flow
+		 */		
+		MarkupContext<ConcreteAspect> markupContext = new MarkupContext<ConcreteAspect>();
+		
+		ConcreteAspect content = null;
+		ConcreteAspect currentTag = null;
+		ConcreteAspect currentTagPosition = null;
+		ConcreteAspect currentAttribute = null;
+		ConcreteAspect currentAttributePosition = null;
+		
+		content = new ConcreteAspect(source.getSourcePart());
+		
+		Node node = null;
+		while((node = lexer.nextNode()) != null) {
+			if (node.getStartPosition() <= source.getStartPostition() && node.getEndPosition() >= source.getEndPosition()) {
+				// source is part of tag				
+				if (node instanceof Tag) {
+					// source type of Tag
+					Tag tag = (Tag)node;
+					currentTag = new ConcreteAspect(tag.getTagName().toLowerCase());
+					//System.out.println("TAG: " + currentTag.getValue());
+					/*
+					 *  update tag stack for text nodes
+					 */
+					if (! tag.isEndTag()) {												
+						currentTagPosition = new ConcreteAspect("0");
+					} else if (tag.isEndTag()) {						
+						currentTagPosition = new ConcreteAspect("2");
+					}
+					
+					@SuppressWarnings("unchecked")
+					Vector<Object> attributeVector = tag.getAttributesEx();
+					
+					// go through attributes
+					for (Iterator<Object> iterator = attributeVector.iterator(); iterator.hasNext();) {
+						PageAttribute object = (PageAttribute) iterator.next();
+						// skipping white-spaces
+						if (object.getName() != null) {
+							if (object.getNameStartPosition() <= source.getStartPostition() && object.getValueEndPosition() >= source.getEndPosition()) {
+								// flow part of attribute
+								currentAttribute = new ConcreteAspect(object.getName().toLowerCase());
+								
+								if (object.getNameStartPosition() <= source.getStartPostition() && object.getNameEndPosition() >= source.getEndPosition()) {
+									// flow part of attribute name
+									currentAttributePosition = new ConcreteAspect("0");
+									
+								} else if (object.getValueStartPosition() <= source.getStartPostition() && object.getValueEndPosition() >= source.getEndPosition()) {
+									if(currentTag.getValue().equals("script")) System.out.println(this.getBypassConditionCount(6) + " : " + currentTag.getValue() + " : " + currentAttribute.getValue() + " : " + source.getSourcePart());
+									currentAttributePosition = new ConcreteAspect("1");
+								} else {
+									currentAttributePosition = new ConcreteAspect("x".toLowerCase());
+								}
+							}
+						}	
+					}
+					
+					
+				} else if (node instanceof Text) {					
+					currentTagPosition = new ConcreteAspect("2");	
+				}
+			
+				
+			} else if (node.getStartPosition() <= source.getStartPostition() && node.getEndPosition() < source.getEndPosition()) {
+				/*
+				 *  source starts in tag
+				 */
+				
+				
+			} else if (node.getStartPosition() > source.getStartPostition() && node.getEndPosition() >= source.getEndPosition()) {
+				/*
+				 *  source ends in tag
+				 */
+				
+			} else if (node.getEndPosition() < source.getStartPostition()){
+				/*
+				 *  source after tag
+				 */
+				
+				if (node instanceof Tag) {
+					// source type of Tag
+					Tag tag = (Tag)node;
+					markupContext.addPreviousTag(new ConcreteAspect(tag.getTagName()));
+										
+					@SuppressWarnings("unchecked")
+					Vector<Object> attributeVector = tag.getAttributesEx();					
+					// go through attributes
+					for (Iterator<Object> iterator = attributeVector.iterator(); iterator.hasNext();) {
+						PageAttribute object = (PageAttribute) iterator.next();
+						// skipping white-spaces
+						if (object.getName() != null) {
+							if (object.getNameStartPosition() <= source.getStartPostition() && object.getValueEndPosition() >= source.getEndPosition()) {
+								// flow part of attribute
+								markupContext.addPreviousAttribute(new ConcreteAspect(object.getName()));								
+							}
+						}	
+					}
+				}	
+			}
+		}
+		markupContext.setContent(content);
+		markupContext.setCurrentAttribute(currentAttribute);
+		markupContext.setCurrentAttributePosition(currentAttributePosition);
+		markupContext.setCurrentTag(currentTag);
+		markupContext.setCurrentTagPosition(currentTagPosition);
+		return markupContext;
+	}
+	
+	
+
+}

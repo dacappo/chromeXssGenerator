@@ -1,0 +1,26 @@
+package analytics.dacappo.sap.com;
+
+public class Flow<AspectType extends Aspect> {
+	
+	private AspectType origin;
+	private MarkupContext<AspectType> markupContext;
+
+	public Flow(AspectType origin, MarkupContext<AspectType> markupContext) {
+		this.origin = origin;
+		this.markupContext = markupContext;
+	}
+	
+	public boolean checkFlow(Flow<ConcreteAspect> f) {
+		return 	origin.checkAspect(f.getOrigin()) &&
+				markupContext.checkMarkupContext(f.getMarkupContext());		
+	}
+	
+	public AspectType getOrigin() {
+		return this.origin;
+	}
+	
+	public MarkupContext<AspectType> getMarkupContext() {
+		return this.markupContext;
+	}
+
+}

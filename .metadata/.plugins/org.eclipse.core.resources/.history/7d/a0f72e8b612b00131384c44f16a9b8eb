@@ -1,0 +1,179 @@
+package analytics.dacappo.sap.com;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+public class MarkupContext<AspectType extends Aspect> {
+	
+	private AspectType content;
+	private AspectType currentTag;
+	private AspectType currentTagPosition; // opening | center | closing
+	private AspectType currentAttribute;
+	private AspectType currentAttributePosition; // name | value
+	
+	private LinkedList<AspectType> previousTags = new LinkedList<AspectType>();
+	private LinkedList<AspectType> previousAttributes = new LinkedList<AspectType>();
+	
+	public MarkupContext() {
+		this.currentTag = null;
+		this.currentTagPosition = null;
+		this.currentAttribute = null;
+		this.currentAttributePosition = null;
+	}
+	
+	public MarkupContext(AspectType currentTag) {
+		this.currentTag = currentTag;
+		this.currentTagPosition = null;
+		this.currentAttribute = null;
+		this.currentAttributePosition = null;
+	}
+	
+	public MarkupContext(AspectType currentTag, AspectType currentTagPosition) {
+		this.currentTag = currentTag;
+		this.currentTagPosition = currentTagPosition;
+		this.currentAttribute = null;
+		this.currentAttributePosition = null;
+	}
+	
+	public MarkupContext(AspectType currentTag, AspectType currentTagPosition, AspectType currentAttribute) {
+		this.currentTag = currentTag;
+		this.currentTagPosition = currentTagPosition;
+		this.currentAttribute = currentAttribute;
+		this.currentAttributePosition = null;
+	}
+	
+	public MarkupContext(AspectType currentTag, AspectType currentTagPosition, AspectType currentAttribute, AspectType currentAttributePosition) {
+		this.currentTag = currentTag;
+		this.currentTagPosition = currentTagPosition;
+		this.currentAttribute = currentAttribute;
+		this.currentAttributePosition = currentAttributePosition;
+	}
+	
+	public AspectType getCurrentTag() {
+		return this.currentTag;
+	}
+	
+	public void setCurrentTag(AspectType currentTag) {
+		this.currentTag = currentTag;
+	}
+	
+	public AspectType getCurrentTagPosition() {
+		return this.currentTagPosition;
+	}
+	
+	public void setCurrentTagPosition(AspectType currentTagPosition) {
+		this.currentTagPosition = currentTagPosition;
+	}
+	
+	public AspectType getCurrentAttribute() {
+		return this.currentAttribute;
+	}
+	
+	public void setCurrentAttribute(AspectType currentAttribute) {
+		this.currentAttribute = currentAttribute;
+	}
+	
+	public AspectType getCurrentAttributePosition() {
+		return this.currentAttributePosition;
+	}
+	
+	public AspectType getContent() {
+		return this.content;
+	}
+	
+	public void setContent(AspectType content) {
+		this.content = content;
+	}
+	
+	public void setCurrentAttributePosition(AspectType currentAttributePosition) {
+		this.currentAttributePosition = currentAttributePosition;
+	}
+	
+	public void addPreviousTag(AspectType a) {
+		previousTags.add(a);
+	}
+	
+	public void addPreviousAttribute(AspectType a) {
+		previousAttributes.add(a);
+	}
+	
+	public LinkedList<AspectType> getPreviousTags() {
+		return previousTags;
+	}
+	
+	public LinkedList<AspectType> getPreviousAttributes() {
+		return previousAttributes;
+	}
+	
+	public boolean checkMarkupContext(MarkupContext<ConcreteAspect> mc) {
+		
+		boolean content, tag, tagPosition, attribute, attributePosition;
+		
+		if (this.content != null) {
+			content = this.content.checkAspect(mc.getContent());
+		} else {
+			content = true;
+		}		
+		
+		if (this.currentTag != null) {
+			tag = this.currentTag.checkAspect(mc.getCurrentTag());
+		} else {
+			tag = true;
+		}
+		
+		if (this.currentTagPosition != null) {
+			tagPosition = this.currentTagPosition.checkAspect(mc.getCurrentTagPosition());
+		} else {
+			tagPosition = true;
+		}
+		
+		if (this.currentAttribute != null) {
+			attribute = this.currentAttribute.checkAspect(mc.getCurrentAttribute());
+		} else {
+			attribute = true;
+		}
+		
+		if (this.currentAttributePosition != null) {
+			attributePosition = this.currentAttributePosition.checkAspect(mc.getCurrentAttributePosition());
+		} else {
+			attributePosition = true;
+		}
+		
+		return	content &&
+				tag &&
+				tagPosition &&
+				attribute &&
+				attributePosition &&
+				this.checkMarkupContextPrevious(mc);
+	}
+	
+	private boolean checkMarkupContextPrevious(MarkupContext<ConcreteAspect> mc) {
+		
+		boolean result = true;
+		
+		Iterator<AspectType> iRequired = previousTags.iterator();
+		while(iRequired.hasNext()) {
+			AspectType requiredAspect = iRequired.next();
+			Iterator<ConcreteAspect> iConcrete = mc.getPreviousTags().iterator();
+			while(iConcrete.hasNext()) {
+				if(!requiredAspect.checkAspect(iConcrete.next())) {
+					result = false;
+				}	
+			}
+		}
+		
+		iRequired = previousAttributes.iterator();
+		while(iRequired.hasNext()) {
+			AspectType requiredAspect = iRequired.next();
+			Iterator<ConcreteAspect> iConcrete = mc.getPreviousAttributes().iterator();
+			while(iConcrete.hasNext()) {
+				if(!requiredAspect.checkAspect(iConcrete.next())) {
+					result = false;
+				}	
+			}
+		}
+		
+		return result;
+	}
+
+}

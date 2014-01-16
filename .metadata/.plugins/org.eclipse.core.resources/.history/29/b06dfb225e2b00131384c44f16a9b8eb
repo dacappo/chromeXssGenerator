@@ -1,0 +1,19 @@
+package analytics.dacappo.sap.com;
+
+public class BypassCondition extends Condition<RequiredAspect> {
+	
+	private String describtion;
+
+	public BypassCondition(String describtion, FlowPattern<RequiredAspect> flowPattern) {
+		super(flowPattern);
+		this.describtion = describtion;		
+	}
+	
+	public String getDescribtion(){
+		return describtion;
+	}
+	
+	public boolean checkCondition(FindingCondition fc) {
+		return this.flowPattern.checkPattern(fc.getFlowPatern());
+	}
+}

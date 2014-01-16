@@ -1,0 +1,38 @@
+package analytics.dacappo.sap.com;
+
+import java.util.LinkedList;
+
+import enumerations.dacappo.sap.com.*;
+
+public abstract class MarkupContext {
+	
+	private Aspect currentTag;
+	private Aspect currentTagPosition;
+	private Aspect currentAttribute;
+	
+	private LinkedList<Aspect> previousTags = new LinkedList<Aspect>();
+	private LinkedList<Aspect> previousAttributes = new LinkedList<Aspect>();
+
+	public MarkupContext(HtmlTag currentTag, TagPosition currentTagPosition, HtmlAttribute currentAttribute) {
+		this.currentTag = currentTag;
+		this.currentTagPosition = currentTagPosition;
+		this.currentAttribute = currentAttribute;
+	}
+	
+	public Aspect getCurrentTag() {
+		return this.currentTag;
+	}
+	
+	public Aspect returnCurrentAttribute() {
+		return this.currentAttribute;
+	}
+	
+	public void addPreviousTag(Aspect a) {
+		previousTags.add(a);
+	}
+	
+	public void addPreviousAttribute(Aspect a) {
+		previousAttributes.add(a);
+	}
+
+}

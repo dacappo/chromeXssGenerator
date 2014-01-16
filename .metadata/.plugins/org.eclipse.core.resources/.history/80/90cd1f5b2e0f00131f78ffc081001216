@@ -1,0 +1,10 @@
+package analytics.dacappo.sap.com;
+
+public class FindingCondition extends Condition<ConcreteAspect>{
+
+	public FindingCondition(FlowPattern<ConcreteAspect> flowPattern) {
+		super(flowPattern);
+	}
+	
+
+}

@@ -1,0 +1,41 @@
+package analytics.dacappo.sap.com;
+
+import java.sql.SQLException;
+
+import dd.DBCredentials;
+import dd.Finding;
+import persistence.MySQLPersistencyLayer;
+
+public class RunAnalyzing {
+	
+	public static void main(String[] args) throws SQLException {
+		/*
+		 * Database connection settings: Server - Port - User - Password - Database
+		 */
+		DBCredentials credentials = new DBCredentials("localhost", 3306, "crawler", "crawler", "crawler");
+		
+		/*
+		 * Establish connection to database
+		 */
+		MySQLPersistencyLayer persistence = new MySQLPersistencyLayer(credentials);
+		
+		/*
+		 * Query database for findings with special sink
+		 */
+		persistence.openFindings(5);
+				
+		/*
+		 * Loop over findings and call analyzer
+		 */
+		for (Finding f = persistence.nextFinding(); f != null; f = persistence.nextFinding()){
+			Analyzer.analyseFinding(f);
+		}
+		
+		/*
+		 * Print results
+		 */
+		
+		System.out.println("Number of analyzed findings: " + Analyzer.getNumOfAnalyses());
+				
+	}
+}

@@ -1,0 +1,48 @@
+package playground.dacappo.sap.com;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.htmlparser.Node;
+import org.htmlparser.Tag;
+import org.htmlparser.Text;
+import org.htmlparser.lexer.Lexer;
+import org.htmlparser.lexer.PageAttribute;
+import org.htmlparser.util.ParserException;
+
+
+public class Test {
+	@SuppressWarnings("rawtypes")
+	public static void main(String[] args) throws ParserException {
+		String testString = "<body><div>bla fooo</div><a href=\"http://example.org?ref=http://example.org\"rel='alternate' >foo</a><script src='http://example.org'></script><br></body>";
+		
+		Lexer l = new Lexer(testString);
+		Node n;
+		
+		while((n = l.nextNode()) != null){
+			
+			System.out.println("TAG: " + n + " start: " + n.getStartPosition() + " end: " + n.getEndPosition());
+			System.out.println("-----------------------------------------------------");
+			if(n instanceof Tag){
+				Vector v = ((Tag)n).getAttributesEx();
+				
+				System.out.println(((Tag)n).getTagName());
+				
+				PageAttribute object;
+				for (Iterator iterator = v.iterator(); iterator.hasNext(); ) {
+					object = (PageAttribute)iterator.next();
+					if (object.getName() != null) {
+						System.out.println(object.getName());
+					}									
+				}
+			}
+			
+			if(n instanceof Text){
+				@SuppressWarnings("unused")
+				Text t = (Text)n;
+				System.out.println();
+			}
+			System.out.println("-----------------------------------------------------");
+		}
+		
+	}
+}

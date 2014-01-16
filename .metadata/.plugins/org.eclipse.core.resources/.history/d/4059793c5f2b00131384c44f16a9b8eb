@@ -1,0 +1,62 @@
+package analytics.dacappo.sap.com;
+
+import java.util.LinkedList;
+
+public class FlowPattern<AspectType extends Aspect> {
+	
+	private AspectType sink;
+	private LinkedList<Flow<AspectType>> flows = new LinkedList<Flow<AspectType>>();
+
+	public FlowPattern(AspectType sink) {
+		this.sink = sink;
+	}
+	
+	public void addFlow(Flow<AspectType> f) {
+		flows.add(f);
+	}
+	
+	public boolean checkPattern(FlowPattern<ConcreteAspect> fp) {
+		
+		boolean result = false;
+		
+		LinkedList<Flow<ConcreteAspect>> concreteFlow = fp.getFlows();
+		
+		int concreteFlowPosition = 0;
+		int requiredFlowPosition = 0;
+		
+		// Pattern matching - similar to String matching algorithm
+		while (concreteFlow.size() >= concreteFlowPosition + this.flows.size()) {
+			
+			while(	this.flows.size() > requiredFlowPosition &&
+					this.flows.get(requiredFlowPosition).checkFlow(concreteFlow.get(concreteFlowPosition + requiredFlowPosition))) {
+				
+				if(requiredFlowPosition == this.flows.size() - 1) {
+					// If the needed pattern fits the concrete flow situation
+					result = true;
+				} 
+				requiredFlowPosition++;
+			}
+			requiredFlowPosition = 0;
+			concreteFlowPosition++;
+		}
+		
+		// In case there is no required flow structure
+		if(this.flows.size() == 0) {
+			result = true;
+		}
+		
+				
+		return 	sink.checkAspect(fp.getSink()) &&
+				result;
+	}
+	
+		
+	public AspectType getSink() {
+		return sink;
+	}
+	
+	public LinkedList<Flow<AspectType>> getFlows() {
+		return flows;
+	}
+
+}

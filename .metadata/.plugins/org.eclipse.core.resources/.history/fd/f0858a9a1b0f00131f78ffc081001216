@@ -1,0 +1,64 @@
+package analytics.dacappo.sap.com;
+
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import dd.Finding;
+
+public class Analyzer {
+		
+	private static int numberOfAnalysedFindings = 0;
+	private static int numberOfPossibleBypasses = 0;
+	
+	private static LinkedList<BypassCondition> bypassConditions = new LinkedList<BypassCondition>();
+	
+	/* 
+	 * Add the various found Cross-site scripting bypasses
+	 */
+	
+	
+	
+	
+	private static int[] bypassConditionsCount = new int[bypassConditions.size()];
+		
+	public static int getNumOfAnalyses() {
+		return numberOfAnalysedFindings;
+	}
+	
+	public static int getNumberOfPossibleBypasses() {
+		return numberOfPossibleBypasses;
+	}
+	
+	public static int getBypassConditionCount(int index) {
+		return bypassConditionsCount[index];
+	}
+	
+	public static BypassCondition getBypasCondition(int index) {
+		return bypassConditions.get(index);
+	}
+	
+	
+	public static void analyseFinding(Finding f) {
+		
+		Iterator<BypassCondition> bypassConditionIterator = bypassConditions.iterator();		
+		boolean bypassable = false;
+		
+		while(bypassConditionIterator.hasNext()) {
+			BypassCondition bypass = bypassConditionIterator.next();
+			if(bypass.checkCondition(getConditionFromFinding(f))) {
+				bypassConditionsCount[bypassConditions.indexOf(bypass)]++;
+				bypassable = true;
+			}
+		}		
+		if (bypassable)  numberOfPossibleBypasses++;		
+		numberOfAnalysedFindings++;
+	}
+	
+	private static FindingCondition getConditionFromFinding(Finding f) {
+		return new FindingCondition(new FlowPattern<ConcreteAspect>(new ConcreteAspect("5")));
+	}
+	
+	
+
+}

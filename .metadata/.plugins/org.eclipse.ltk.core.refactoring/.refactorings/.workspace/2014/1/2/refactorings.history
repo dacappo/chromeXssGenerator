@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename Java project &apos;xsstest&apos; to &apos;xssPatternMatching&apos;&#x0D;&#x0A;- Original element: &apos;xsstest&apos;&#x0D;&#x0A;- Renamed element: &apos;xsstest&apos;&#x0D;&#x0A;- Update references to refactored element" description="Rename Java project &apos;xsstest&apos;" flags="7" id="org.eclipse.jdt.ui.rename.java.project" input="=xsstest" name="xssPatternMatching" references="true" stamp="1389194418970" version="1.0"/>
+</session>

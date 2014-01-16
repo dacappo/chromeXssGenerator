@@ -1,0 +1,45 @@
+package analytics.dacappo.sap.com;
+
+
+import java.util.LinkedList;
+
+import dd.Finding;
+import dd.Source;
+
+public class Analyzer {
+		
+	private static int numberOfAnalysedFindings = 0;
+	private static int numberOfPossibleBypasses = 0;
+	
+	private static LinkedList<BypassCondition> bypassConditions = new LinkedList<BypassCondition>();
+	private static LinkedList<Integer> bypassConditionsCount = new LinkedList<Integer>();
+		
+	public static int getNumOfAnalyses() {
+		return numberOfAnalysedFindings;
+	}
+	
+	public static int getNumberOfPossibleBypasses() {
+		return numberOfPossibleBypasses;
+	}
+	
+	public static int getBypassConditionCount(int index) {
+		return bypassConditionsCount.get(index);
+	}
+	
+	public static BypassCondition getBypasCondition(int index) {
+		return bypassConditions.get(index);
+	}
+	
+	
+	public static void analyseFinding(Finding f) {
+		
+		if(false) {
+			numberOfPossibleBypasses++;
+		}
+		
+		numberOfAnalysedFindings++;
+	}
+	
+	
+
+}

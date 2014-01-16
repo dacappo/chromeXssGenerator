@@ -1,0 +1,74 @@
+package analytics.dacappo.sap.com;
+
+import java.util.Iterator;
+
+import dd.Finding;
+import dd.Source;
+
+public class ExploitGenerator {
+	
+	private static ExploitGenerator generator;
+	
+	
+	/**
+	* Implementation of Singleton Pattern
+	* @return ExploitGenerator
+	*/
+	public static ExploitGenerator getExploitGenerator() {
+		if(generator != null) {
+			return generator;
+		} else {
+			generator = new ExploitGenerator();
+			return generator;
+		}
+	}
+	
+	/**
+	* Constructs an EXPLOITGENERATOR
+	*/
+	private ExploitGenerator() {
+		
+	}
+	
+	
+	public void generateExploit(Finding finding, FindingCondition findingCondition, MatchResult matchResult, BypassCondition bypassCondition) {
+		System.out.println("URL & ID: " + finding.getUrl() + " " + finding.getId());
+		
+		System.out.println(generateBreakOutSequence(finding, findingCondition, matchResult) + "srcdoc=\"<sript>alert('1')<script>");
+		
+		// insert breakout payload breakin at right palce in url
+		
+		
+	}
+	
+	private String generateBreakOutSequence(Finding finding, FindingCondition findingCondition, MatchResult matchResult) {
+		
+		String breakOutSequence = "";
+		
+		String attribute = findingCondition.getFlowPatern().getFlows().get(matchResult.getFlowPatternPosition()).getMarkupContext().getAttributeMarkup();
+		System.out.println("Affected att: " + attribute);
+		
+		if (attribute.substring(attribute.length()).equals("'")) {
+			breakOutSequence += "#' ";
+		} else if(attribute.substring(attribute.length()).equals("\"")) {
+			breakOutSequence += "#\" ";
+		}
+		
+		Iterator<Source> sourceIterator = finding.getSources().values().iterator();		
+		for(int i = 0; sourceIterator.hasNext(); i++) {
+			Source source = sourceIterator.next();
+			if( i == matchResult.getFlowPatternPosition()) {
+				System.out.println("Value of source: " + source.getSourcePart());
+				
+				System.out.println("------------------------");
+			}
+			
+			
+			//MarkupContext<ConcreteAspect> markupContext;
+			
+		}
+		
+		return breakOutSequence;
+	}
+	
+}
