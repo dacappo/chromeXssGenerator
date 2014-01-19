@@ -1,2 +1,6 @@
 1389714219912	Rename type 'Test'
 1389787232429	Rename local variable 'result'
+1389864172705	Rename method 'generateExploit'
+1389874904915	Rename method 'generateBreakOutSequence'
+1389874924804	Rename method 'generateBreakInSequence'
+1389954097715	Rename local variable 'mathResult'

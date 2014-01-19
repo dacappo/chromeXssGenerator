@@ -92,7 +92,6 @@ public class MySQLPersistencyLayer{
 				int startPosition = Integer.parseInt((position.split("-")[0]));
 				int endPosition = Integer.parseInt((position.split("-")[1]));
 				
-				
 				int sourceId = sourceRs.getInt(3);
 				String sourceName = sourceRs.getString(4);
 				String sourcePart = sourceRs.getString(5);
@@ -100,7 +99,7 @@ public class MySQLPersistencyLayer{
 				int hasEncodeURI = sourceRs.getInt(7);
 				int hasEncodeURIComponent = sourceRs.getInt(8);
 			
-				sources.put(position, new Source(sourceId, sourceName, sourcePart, startPosition, endPosition, hasEscaping, hasEncodeURI, hasEncodeURIComponent));
+				sources.put(String.valueOf(startPosition) + "-" + String.valueOf(endPosition), new Source(sourceId, sourceName, sourcePart, startPosition, endPosition, hasEscaping, hasEncodeURI, hasEncodeURIComponent));
 			}
 	
 			return new Finding(id, sinkId, url, domain, value, sources, d1, d2, d3);

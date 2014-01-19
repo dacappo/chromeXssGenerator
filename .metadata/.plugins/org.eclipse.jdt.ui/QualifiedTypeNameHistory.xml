@@ -16,4 +16,6 @@
 <fullyQualifiedTypeName name="org.htmlparser.Text"/>
 <fullyQualifiedTypeName name="org.htmlparser.Tag"/>
 <fullyQualifiedTypeName name="dd.Finding"/>
+<fullyQualifiedTypeName name="java.net.URLEncoder"/>
+<fullyQualifiedTypeName name="java.net.URLDecoder"/>
 </qualifiedTypeNameHistroy>

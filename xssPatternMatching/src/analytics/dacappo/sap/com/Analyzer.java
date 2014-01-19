@@ -59,9 +59,16 @@ public class Analyzer {
 	*/
 	private void setBypassConditions() {		
 		
+		/* ------------------------------------------------------------ 1. Bypass ------------------------------------------------------------ */
 		
 		RequiredAspect ra1 = new RequiredAspect();
 		ra1.addAllowedValue("1"); // location.href
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
 		
 		RequiredAspect ra2 = new RequiredAspect();
 		ra2.addAllowedValue("iframe");
@@ -77,7 +84,7 @@ public class Analyzer {
 		Flow<RequiredAspect> requiredFlow1 = new Flow<RequiredAspect>(ra1, mk1);
 		
 		RequiredAspect sink = new RequiredAspect();
-		//sink.addAllowedValue("2");
+		sink.addAllowedValue("2");
 		FlowPattern<RequiredAspect> requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
 		
 		requiredFlowPattern.addFlow(requiredFlow1);
@@ -85,7 +92,8 @@ public class Analyzer {
 		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Iframe srcdoc attribute",requiredFlowPattern));
 		
 		
-		/*
+		/* ------------------------------------------------------------ 2. Bypass ------------------------------------------------------------ */
+		
 		ra1 = new RequiredAspect();
 		ra1.addAllowedValue("1");
 		ra1.addAllowedValue("2");
@@ -124,7 +132,32 @@ public class Analyzer {
 		
 		requiredFlowPattern.addFlow(requiredFlow1);
 		
-		bypassConditions.add(new BypassCondition("XSS-AUDITOR: script src attribute hijacking",requiredFlowPattern)); */
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: script src attribute hijacking",requiredFlowPattern));
+		
+		
+		/* ------------------------------------------------------------ 3. Bypass ------------------------------------------------------------ */
+		
+		ra1 = new RequiredAspect();
+		ra1.addAllowedValue("1");
+		ra1.addAllowedValue("2");
+		ra1.addAllowedValue("3");
+		ra1.addAllowedValue("4");
+		ra1.addAllowedValue("5");
+		ra1.addAllowedValue("6");
+		ra1.addAllowedValue("7");
+				
+		requiredFlow1 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		Flow<RequiredAspect> requiredFlow2 = new Flow<RequiredAspect>(ra1, new MarkupContext<RequiredAspect>());
+		
+		sink = new RequiredAspect();
+		sink.addAllowedValue("2");
+		
+		requiredFlowPattern = new FlowPattern<RequiredAspect>(sink);
+		
+		requiredFlowPattern.addFlow(requiredFlow1);
+		requiredFlowPattern.addFlow(requiredFlow2);
+		
+		bypassConditions.add(new BypassCondition("XSS-AUDITOR: Flow Pattern: URL - URL -> Eventhandler splitting",requiredFlowPattern));
 		
 		
 		
@@ -513,13 +546,19 @@ public class Analyzer {
 		
 		while(bypassConditionIterator.hasNext()) {
 			BypassCondition bypass = bypassConditionIterator.next();
-			MatchResult mathResult = bypass.checkCondition(findingCondition);
+			MatchResult matchResult = bypass.checkCondition(findingCondition);
 			
-			if(mathResult.getBool()) {
+			if(matchResult.getBool()) {
 				bypassConditionsCount[bypassConditions.indexOf(bypass)]++;
 				bypassable = true;
 				
-				ExploitGenerator.getExploitGenerator().generateExploit(f, findingCondition, mathResult, bypass);
+				if(bypassConditions.indexOf(bypass) == 0) {
+					ExploitGenerator.getExploitGenerator().generateIframeExploit(f, findingCondition, matchResult, bypass);
+				} else if(bypassConditions.indexOf(bypass) == 1) {
+					ExploitGenerator.getExploitGenerator().generateScriptExploit(f, findingCondition, matchResult, bypass);
+				} else if(bypassConditions.indexOf(bypass) == 2) {
+					//System.out.println(f.getUrl() + " " + f.getId());
+				}
 			}
 		}
 		

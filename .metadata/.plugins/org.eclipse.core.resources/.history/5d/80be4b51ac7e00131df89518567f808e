@@ -1,0 +1,106 @@
+package analytics.dacappo.sap.com;
+
+import java.util.Iterator;
+
+import dd.Finding;
+import dd.Source;
+
+public class ExploitGenerator {
+	
+	private static ExploitGenerator generator;
+	
+	
+	/**
+	* Implementation of Singleton Pattern
+	* @return ExploitGenerator
+	*/
+	public static ExploitGenerator getExploitGenerator() {
+		if(generator != null) {
+			return generator;
+		} else {
+			generator = new ExploitGenerator();
+			return generator;
+		}
+	}
+	
+	/**
+	* Constructs an EXPLOITGENERATOR
+	*/
+	private ExploitGenerator() {
+		
+	}
+	
+	
+	public void generateIframeExploit(Finding finding, FindingCondition findingCondition, MatchResult matchResult, BypassCondition bypassCondition) {
+		
+		//System.out.println("URL & ID:  " + finding.getUrl() + "   " + finding.getId());
+		//System.out.println("Source:    " + getSourceFromFinding(finding,matchResult.getFlowPatternPosition()).getSourcePart());
+		//System.out.println("Attribute: " + findingCondition.getFlowPatern().getFlows().get(matchResult.getFlowPatternPosition()).getMarkupContext().getAttributeMarkup());
+		
+		Source source = getSourceFromFinding(finding, matchResult.getFlowPatternPosition());
+		
+		if (finding.getUrl().length() ==  source.getSourcePart().length()) {
+			System.out.println("Exploit:   " + finding.getUrl() + generateIframeBreakOutSequence(finding, findingCondition, matchResult) + "srcdoc=\"<script>alert('1')</script>\"" + generateIframeBreakInSequence(finding, findingCondition, matchResult));
+		}	
+		
+		//System.out.println("------------------------");
+	}
+	
+	private String generateIframeBreakOutSequence(Finding finding, FindingCondition findingCondition, MatchResult matchResult) {
+		
+		String breakOutSequence = "#";
+		
+		String attribute = findingCondition.getFlowPatern().getFlows().get(matchResult.getFlowPatternPosition()).getMarkupContext().getAttributeMarkup();
+		
+		if (attribute.substring(attribute.length()-1).equals("'")) {
+			breakOutSequence += "' ";
+		} else if(attribute.substring(attribute.length()-1).equals("\"")) {
+			breakOutSequence += "\" ";
+		} else {
+			breakOutSequence += " ";
+		}
+		
+		return breakOutSequence;
+	}
+	
+	private String generateIframeBreakInSequence(Finding finding, FindingCondition findingCondition, MatchResult matchResult) {
+		
+		String breakInSequence = " foo=";
+		String attribute = findingCondition.getFlowPatern().getFlows().get(matchResult.getFlowPatternPosition()).getMarkupContext().getAttributeMarkup();
+		
+		if (attribute.substring(attribute.length()-1).equals("'")) {
+			breakInSequence += "'";
+		} else if(attribute.substring(attribute.length()-1).equals("\"")) {
+			breakInSequence += "\"";
+		}
+		
+		return breakInSequence;
+	}
+	
+	
+	
+	
+	public void generateScriptExploit(Finding finding, FindingCondition findingCondition, MatchResult matchResult, BypassCondition bypassCondition) {
+		
+	}
+	
+	
+	
+	/*
+	 * general functions used by generator methods
+	 */
+	private Source getSourceFromFinding(Finding finding, int pos) {
+		Source result = null;
+		
+		Iterator<Source> sourceIterator = finding.getSources().values().iterator();		
+		for(int i = 0; sourceIterator.hasNext(); i++) {
+			Source source = sourceIterator.next();
+			if( i == pos) {
+				result = source;	
+			}
+		}
+		
+		return result;
+	}
+	
+}
